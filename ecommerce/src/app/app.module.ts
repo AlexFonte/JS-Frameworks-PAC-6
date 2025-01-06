@@ -10,6 +10,7 @@ import { ArticleListComponent } from './articles/article-list/article-list.compo
 import { NavbarComponent } from './navbar/navbar.component';
 import { ArticleNewTemplateComponent } from './articles/article-new-template/article-new-template.component';
 import { ArticleNewReactiveComponent } from './articles/article-new-reactive/article-new-reactive.component';
+import { ArticleService } from './services/article-service.service';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,7 @@ import { ArticleNewReactiveComponent } from './articles/article-new-reactive/art
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [ArticleService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

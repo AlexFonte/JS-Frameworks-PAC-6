@@ -1,12 +1,14 @@
-import {Component, OnInit} from '@angular/core';
-import {Article} from "../../model/article";
-import {ArticleQuantityChange} from "../../model/article-quantity-change";
+import { Component, OnInit } from '@angular/core';
+import { Article } from "../../model/article";
+import { ArticleQuantityChange } from "../../model/article-quantity-change";
+import { Observable } from 'rxjs';
+import { ArticleService } from '../../services/article-service.service';
 
 @Component({
   selector: 'app-article-list',
   template: `
     <app-article-item
-      *ngFor="let item of articlesList"
+      *ngFor="let item of articlesList$ | async"
       [article]="item"
       (quantityChange)="onQuantityChange($event)">
     </app-article-item>
@@ -14,13 +16,15 @@ import {ArticleQuantityChange} from "../../model/article-quantity-change";
   styles: []
 })
 export class ArticleListComponent implements OnInit {
-  public articlesList: Array<Article>;
+  
+  public articlesList$: Observable<Article[]>;
 
-  constructor() {
+  constructor(private articleService: ArticleService) {
   }
 
   ngOnInit() {
-    this.articlesList = [{
+    this.articlesList$ = this.articleService.getArticles();
+    /* this.articlesList = [{
       id: 1,
       name: "Agua Font Vella 1,5 l.",
       imageUrl: "https://static.carrefour.es/hd_150x_/img_pim_food/000127_00_1.jpg",
@@ -41,15 +45,10 @@ export class ArticleListComponent implements OnInit {
       price: 0.87,
       isOnSale: true,
       quantityInCart: 0
-    }]
+    }] */
   }
 
   onQuantityChange(articleQuantityChange: ArticleQuantityChange): void {
-    console.log(this.articlesList[0]);
-    console.log(articleQuantityChange);
-    let item = this.articlesList.find(article => article.id === articleQuantityChange.article.id);
-    console.log(item);
-    item.quantityInCart += articleQuantityChange.quantityChange;
-    console.log(item);
+    this.articleService.changeQuantity(articleQuantityChange.article.id, articleQuantityChange.quantityChange)
   }
 }

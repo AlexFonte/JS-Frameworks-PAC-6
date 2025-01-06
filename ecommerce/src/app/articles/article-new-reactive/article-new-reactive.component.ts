@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Article } from '../../model/article';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NameArticleValidator } from '../../custom-validator/name-article-validator';
+import { ArticleService } from '../../services/article-service.service';
 
 @Component({
   selector: 'app-article-new-reactive',
@@ -13,7 +14,7 @@ export class ArticleNewReactiveComponent {
   public invalidForm: boolean = false;
   public articleForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private articleService: ArticleService) {
     this.createForm();
   }
 
@@ -31,9 +32,11 @@ export class ArticleNewReactiveComponent {
       this.invalidForm = true;
       console.log("Article invalid", this.articleForm.value)
     } else {
-      const newArticle: Article = this.articleForm.value;
+      let newArticle: Article = this.articleForm.value;
       this.invalidForm = false;
-      console.log("Nou article", newArticle);
+      this.articleService.create(newArticle).subscribe((article) => {
+        console.log("Nou article", article);
+      });
     }
   }
 
