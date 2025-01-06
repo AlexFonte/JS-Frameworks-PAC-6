@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Article } from '../model/article';
 import { Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -8,9 +9,9 @@ import { Observable, of } from 'rxjs';
 export class ArticleService {
 
   private articlesList: Article[];
-
-  constructor() {
-    this.articlesList = [{
+  private baseUrl: string = "http://localhost:3000/api/";
+  constructor(private http: HttpClient) {
+    /* this.articlesList = [{
       id: 1,
       name: "Agua Font Vella 1,5 l.",
       imageUrl: "https://static.carrefour.es/hd_150x_/img_pim_food/000127_00_1.jpg",
@@ -31,11 +32,11 @@ export class ArticleService {
       price: 0.87,
       isOnSale: true,
       quantityInCart: 0
-    }]
+    }] */
   }
 
-  getArticles(): Observable<Article[]> {
-    return of(this.articlesList);
+  getArticles(query: string): Observable<Article[]> {
+    return this.http.get<Article[]>(this.baseUrl + "articles",{params: {q: query}});
   }
 
   changeQuantity(articleID: number, chagenInQuantity: number): Observable<Article> {

@@ -11,6 +11,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { ArticleNewTemplateComponent } from './articles/article-new-template/article-new-template.component';
 import { ArticleNewReactiveComponent } from './articles/article-new-reactive/article-new-reactive.component';
 import { ArticleService } from './services/article-service.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -25,9 +26,12 @@ import { ArticleService } from './services/article-service.service';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule
   ],
-  providers: [ArticleService],
+  providers: [
+    ArticleService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

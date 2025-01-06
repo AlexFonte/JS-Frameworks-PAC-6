@@ -1,12 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { Article } from "../../model/article";
 import { ArticleQuantityChange } from "../../model/article-quantity-change";
-import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, merge, Observable, startWith, Subject, switchMap } from 'rxjs';
 import { ArticleService } from '../../services/article-service.service';
 
 @Component({
   selector: 'app-article-list',
   template: `
+
+<div>
+      <input type="text"
+             placeholder="Buscar article"
+             name="searchBox"
+             [(ngModel)]="searchText"
+             (keyup)="search()"/>
+    </div>
     <app-article-item
       *ngFor="let item of articlesList$ | async"
       [article]="item"
@@ -16,14 +24,23 @@ import { ArticleService } from '../../services/article-service.service';
   styles: []
 })
 export class ArticleListComponent implements OnInit {
-  
+
   public articlesList$: Observable<Article[]>;
+
+  public searchText: string = '';
+  private searchTerms: Subject<string> = new Subject();
+  private reloadArticleList : Subject <void> = new Subject();
 
   constructor(private articleService: ArticleService) {
   }
 
   ngOnInit() {
-    this.articlesList$ = this.articleService.getArticles();
+    this.articlesList$ = this.searchTerms.pipe(
+      startWith(this.searchText),
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap((q) => this.articleService.getArticles(this.searchText)));
+    // this.articlesList$ = this.articleService.getArticles();
     /* this.articlesList = [{
       id: 1,
       name: "Agua Font Vella 1,5 l.",
@@ -50,5 +67,9 @@ export class ArticleListComponent implements OnInit {
 
   onQuantityChange(articleQuantityChange: ArticleQuantityChange): void {
     this.articleService.changeQuantity(articleQuantityChange.article.id, articleQuantityChange.quantityChange)
+  }
+
+  search(){
+    this.searchTerms.next(this.searchText);
   }
 }
