@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 export class ArticleService {
 
   private articlesList: Article[];
-  private baseUrl: string = "http://localhost:3000/api/";
+  private baseUrl: string = "http://localhost:3000/api/articles";
   constructor(private http: HttpClient) {
     /* this.articlesList = [{
       id: 1,
@@ -35,22 +35,25 @@ export class ArticleService {
     }] */
   }
 
-  getArticles(query: string): Observable<Article[]> {
-    return this.http.get<Article[]>(this.baseUrl + "articles",{params: {q: query}});
+  getArticles(query: string = ''): Observable<Article[]> {
+    return this.http.get<Article[]>(this.baseUrl ,{params: {q: query}});
   }
 
-  changeQuantity(articleID: number, chagenInQuantity: number): Observable<Article> {
-    let article = this.articlesList.find(article => article.id === articleID);
+  changeQuantity(articleID: number, changeInQuantity: number): Observable<any> {
+    /* let article = this.articlesList.find(article => article.id === articleID);
     article.quantityInCart += chagenInQuantity;
-    return of(article);
+    return of(article); */
+    console.log('sending:', changeInQuantity)
+    return this.http.patch<Article>(`${this.baseUrl}/${articleID}`, {changeInQuantity});
   }
 
   create(article: Article): Observable<any> {
-    article.id = this.articlesList.length + 1;
+/*     article.id = this.articlesList.length + 1;
     article.quantityInCart = 0;
     this.articlesList.push(article);
-    return of(article);
+    return of(article); */
 
+    return this.http.post<Article>(this.baseUrl , {article});
   }
 
 }

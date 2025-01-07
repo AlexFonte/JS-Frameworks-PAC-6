@@ -1,25 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { Article } from "../../model/article";
 import { ArticleQuantityChange } from "../../model/article-quantity-change";
-import { debounceTime, distinctUntilChanged, merge, Observable, startWith, Subject, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, merge, mergeWith, Observable, startWith, Subject, switchMap } from 'rxjs';
 import { ArticleService } from '../../services/article-service.service';
 
 @Component({
   selector: 'app-article-list',
   template: `
-
-<div>
-      <input type="text"
-             placeholder="Buscar article"
-             name="searchBox"
-             [(ngModel)]="searchText"
-             (keyup)="search()"/>
-    </div>
-    <app-article-item
-      *ngFor="let item of articlesList$ | async"
-      [article]="item"
-      (quantityChange)="onQuantityChange($event)">
-    </app-article-item>
+  <div class="container d-grid gap-2">
+    <input type="text"
+      placeholder="Buscardor d'articles"
+      name="searchBox"
+      [(ngModel)]="searchText"
+      (keyup)="search()"/>
+  <div class="d-flex justify-content-between align-items-center">
+      <app-article-item
+        *ngFor="let item of articlesList$ | async as articlesList"
+        [article]="item"
+        (quantityChange)="onQuantityChange($event)">
+      </app-article-item>
+  </div>
+  </div>
   `,
   styles: []
 })
@@ -29,7 +30,7 @@ export class ArticleListComponent implements OnInit {
 
   public searchText: string = '';
   private searchTerms: Subject<string> = new Subject();
-  private reloadArticleList : Subject <void> = new Subject();
+  private reloadArticleList: Subject<void> = new Subject();
 
   constructor(private articleService: ArticleService) {
   }
@@ -37,9 +38,11 @@ export class ArticleListComponent implements OnInit {
   ngOnInit() {
     this.articlesList$ = this.searchTerms.pipe(
       startWith(this.searchText),
-      debounceTime(500),
+      debounceTime(333),
       distinctUntilChanged(),
-      switchMap((q) => this.articleService.getArticles(this.searchText)));
+      mergeWith(this.reloadArticleList),
+      switchMap(() => this.articleService.getArticles(this.searchText)),
+    );
     // this.articlesList$ = this.articleService.getArticles();
     /* this.articlesList = [{
       id: 1,
@@ -65,11 +68,25 @@ export class ArticleListComponent implements OnInit {
     }] */
   }
 
-  onQuantityChange(articleQuantityChange: ArticleQuantityChange): void {
-    this.articleService.changeQuantity(articleQuantityChange.article.id, articleQuantityChange.quantityChange)
+  onQuantityChange(change: ArticleQuantityChange) {
+    console.log("article: ", change.article.quantityInCart);
+    console.log("quantitychange: ", change.quantityChange);
+
+    const currentQuantity = change.article.quantityInCart + change.quantityChange;
+    console.log("currentQuantity: ", currentQuantity);
+    this.articleService.changeQuantity(change.article.id, change.quantityChange)
+      .subscribe({
+        next: (response) => {
+          console.log(response.msg)
+          this.reloadArticleList.next();
+        },
+        error: (err) => {
+          console.error('Error to update quantity', err);
+        },
+      });
   }
 
-  search(){
+  search() {
     this.searchTerms.next(this.searchText);
   }
 }
