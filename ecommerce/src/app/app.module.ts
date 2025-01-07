@@ -12,6 +12,7 @@ import { ArticleNewTemplateComponent } from './articles/article-new-template/art
 import { ArticleNewReactiveComponent } from './articles/article-new-reactive/article-new-reactive.component';
 import { ArticleService } from './services/article-service.service';
 import { HttpClientModule } from '@angular/common/http';
+import { ImageUrlPipe } from './pipes/imageUrl.pipe';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { HttpClientModule } from '@angular/common/http';
     ArticleListComponent,
     NavbarComponent,
     ArticleNewTemplateComponent,
-    ArticleNewReactiveComponent
+    ArticleNewReactiveComponent,
+    ImageUrlPipe
   ],
   imports: [
     BrowserModule,
