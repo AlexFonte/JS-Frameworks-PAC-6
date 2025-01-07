@@ -32,10 +32,17 @@ export class ArticleNewReactiveComponent {
       this.invalidForm = true;
       console.log("Article invalid", this.articleForm.value)
     } else {
-      let newArticle: Article = this.articleForm.value;
       this.invalidForm = false;
+
+      let newArticle: Article = {
+        id: null,
+        quantityInCart: 0,
+        ...this.articleForm.value
+      };
+      console.log("Article valid", newArticle);
       this.articleService.create(newArticle).subscribe((article) => {
-        console.log("Nou article", article);
+        console.log("New article created!!!", article);
+        this.articleForm.reset();
       });
     }
   }

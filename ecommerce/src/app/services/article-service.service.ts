@@ -8,8 +8,9 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ArticleService {
 
-  private articlesList: Article[];
+  // private articlesList: Article[];
   private baseUrl: string = "http://localhost:3000/api/articles";
+  
   constructor(private http: HttpClient) {
     /* this.articlesList = [{
       id: 1,
@@ -36,6 +37,7 @@ export class ArticleService {
   }
 
   getArticles(query: string = ''): Observable<Article[]> {
+    console.log("Sending article to server...", query)
     return this.http.get<Article[]>(this.baseUrl ,{params: {q: query}});
   }
 
@@ -43,7 +45,7 @@ export class ArticleService {
     /* let article = this.articlesList.find(article => article.id === articleID);
     article.quantityInCart += chagenInQuantity;
     return of(article); */
-    console.log('sending:', changeInQuantity)
+    console.log("Sending article to server...", changeInQuantity)
     return this.http.patch<Article>(`${this.baseUrl}/${articleID}`, {changeInQuantity});
   }
 
@@ -53,7 +55,8 @@ export class ArticleService {
     this.articlesList.push(article);
     return of(article); */
 
-    return this.http.post<Article>(this.baseUrl , {article});
+    console.log("Sending article to server...", article);
+    return this.http.post<Article>(this.baseUrl , article);
   }
 
 }

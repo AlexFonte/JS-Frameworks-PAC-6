@@ -7,19 +7,22 @@ import { ArticleService } from '../../services/article-service.service';
 @Component({
   selector: 'app-article-list',
   template: `
-  <div class="container d-grid gap-2">
-    <input type="text"
+  <div class="container d-grid mt-3">
+    
+  <input type="text"
       placeholder="Buscardor d'articles"
       name="searchBox"
       [(ngModel)]="searchText"
       (keyup)="search()"/>
-  <div class="d-flex justify-content-between align-items-center">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
       <app-article-item
         *ngFor="let item of articlesList$ | async as articlesList"
         [article]="item"
         (quantityChange)="onQuantityChange($event)">
       </app-article-item>
-  </div>
+    </div>
+    
   </div>
   `,
   styles: []
@@ -81,7 +84,7 @@ export class ArticleListComponent implements OnInit {
           this.reloadArticleList.next();
         },
         error: (err) => {
-          console.error('Error to update quantity', err);
+          console.error('Error to updating quantity', err);
         },
       });
   }
